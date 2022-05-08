@@ -23,15 +23,15 @@ async function run() {
     app.get("/products", async (req, res) => {
       const query = {};
       const cursor = productCollection.find(query);
-      const products = await cursor.toArray();
-      res.send(products);
+      const result = await cursor.toArray();
+      res.send(result);
     });
 
     app.get("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const product = await productCollection.findOne(query);
-      res.send(product);
+      const result = await productCollection.findOne(query);
+      res.send(result);
     });
 
     app.put("/product/:id", async (req, res) => {
@@ -41,22 +41,28 @@ async function run() {
       const options = { upsert: true };
       const updateDoc = {
         $set: {
-          quantity: newQuantity,
+          quantity: newQuantity.quantity,
         },
       };
-      const product = await productCollection.updateOne(
+      const result = await productCollection.updateOne(
         updateDoc,
         filter,
         options
       );
-      res.send(product);
+      res.send(result);
+    });
+
+    app.post("/product", async (req, res) => {
+      const newProduct = req.body;
+      const result = await productCollection.insertOne(newProduct);
+      res.send(result);
     });
 
     app.delete("/product/:id", async (req, res) => {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
-      const product = await productCollection.deleteOne(query);
-      res.send(product);
+      const result = await productCollection.deleteOne(query);
+      res.send(result);
     });
   } finally {
   }
